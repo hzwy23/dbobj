@@ -27,11 +27,11 @@ func NewMySQL() dbhandle.DbObj {
 
 	HOME := os.Getenv("HBIGDATA_HOME")
 
-	filedir := filepath.Join(HOME, "conf", "wisrc.conf")
+	filedir := filepath.Join(HOME, "conf", "dbobj.conf")
 
 	red, err := utils.GetResource(filedir)
 	if err != nil {
-		fmt.Errorf("cant not read ./conf/wisrc.conf.please check this file.")
+		fmt.Errorf("cant not read ./conf/dbobj.conf.please check this file.")
 		return nil
 	}
 

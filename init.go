@@ -12,7 +12,7 @@ import (
 
 func init() {
 	HOME := os.Getenv("HBIGDATA_HOME")
-	filedir := filepath.Join(HOME, "conf", "wisrc.conf")
+	filedir := filepath.Join(HOME, "conf", "dbobj.conf")
 	conf, err := utils.GetConfig(filedir)
 	if err != nil {
 		fmt.Println(err)

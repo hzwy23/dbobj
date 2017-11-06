@@ -1,6 +1,7 @@
 package dbobj
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -11,9 +12,10 @@ import (
 
 func init() {
 	HOME := os.Getenv("HBIGDATA_HOME")
-	filedir := filepath.Join(HOME, "conf", "asofdate.conf")
+	filedir := filepath.Join(HOME, "conf", "wisrc.conf")
 	conf, err := utils.GetConfig(filedir)
 	if err != nil {
+		fmt.Println(err)
 		panic("init database failed.")
 	}
 	Default, err = conf.Get("DB.type")

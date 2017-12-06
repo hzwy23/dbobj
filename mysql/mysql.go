@@ -1,15 +1,11 @@
 package mysql
 
 import (
+	"github.com/hzwy23/panda/logger"
 	"database/sql"
-	"fmt"
-	"os"
+	"github.com/hzwy23/panda/crypto/aes"
 	"strconv"
 	"strings"
-
-	"github.com/hzwy23/dbobj/utils"
-
-	"path/filepath"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/hzwy23/dbobj/dbhandle"
@@ -25,20 +21,15 @@ func NewMySQL() dbhandle.DbObj {
 
 	o := new(mysql)
 
-	HOME := os.Getenv("HBIGDATA_HOME")
-
-	filedir := filepath.Join(HOME, "conf", "dbobj.conf")
-
-	red, err := utils.GetResource(filedir)
+	red,err:=dbhandle.GetConfig()
 	if err != nil {
-		fmt.Errorf("cant not read ./conf/dbobj.conf.please check this file.")
-		return nil
+		panic("cant not read ./conf/dbobj.conf.please check this file.")
 	}
 
-	tns := red.Conf["DB.tns"]
-	usr := red.Conf["DB.user"]
-	pad := red.Conf["DB.passwd"]
-	mc := red.Conf["DB.maxConn"]
+	tns,_ :=  red.Get("DB.tns")
+	usr,_ := red.Get("DB.user")
+	pad,_ := red.Get("DB.passwd")
+	mc,_ := red.Get("DB.maxConn")
 	maxConn := 100
 	if len(mc) != 0 {
 		mx, err := strconv.Atoi(mc)
@@ -48,9 +39,9 @@ func NewMySQL() dbhandle.DbObj {
 	}
 
 	if len(pad) == 24 {
-		pad, err = utils.Decrypt(pad)
+		pad, err = aes.Decrypt(pad)
 		if err != nil {
-			fmt.Errorf("Decrypt mysql passwd failed.")
+			logger.Error("Decrypt mysql passwd failed.")
 			return nil
 		}
 	}
@@ -58,13 +49,13 @@ func NewMySQL() dbhandle.DbObj {
 	o.db, err = sql.Open("mysql", usr+":"+pad+"@"+tns)
 
 	if err != nil {
-		fmt.Errorf("open oracle database failed.", err)
+		logger.Error("open oracle database failed.", err.Error())
 		return nil
 	}
 	if len(pad) != 24 {
-		psd, err := utils.Encrypt(pad)
+		psd, err := aes.Encrypt(pad)
 		if err != nil {
-			fmt.Errorf("decrypt passwd failed.", psd)
+			logger.Error("decrypt passwd failed."+psd)
 			return nil
 		}
 		psd = "\"" + psd + "\""
@@ -74,7 +65,7 @@ func NewMySQL() dbhandle.DbObj {
 	// 设置连接池最大值
 	o.db.SetMaxOpenConns(maxConn)
 	o.db.SetConnMaxLifetime(0)
-	fmt.Println("create mysql dbhandle success. max connect value is:", maxConn)
+	logger.Info("create mysql dbhandle success. max connect value is:", maxConn)
 	return o
 }
 
@@ -83,7 +74,7 @@ func (this *mysql) GetErrorCode(err error) string {
 	if n := strings.Index(ret, ":"); n > 0 {
 		return strings.TrimSpace(ret[:n])
 	} else {
-		fmt.Errorf("this error information is not mysql return info")
+		logger.Error("this error information is not mysql return info")
 		return ""
 	}
 }
@@ -93,7 +84,7 @@ func (this *mysql) GetErrorMsg(err error) string {
 	if n := strings.Index(ret, ":"); n > 0 {
 		return strings.TrimSpace(ret[n+1:])
 	} else {
-		fmt.Errorf("this error information is not mysql return info")
+		logger.Error("this error information is not mysql return info")
 		return ""
 	}
 }
@@ -102,9 +93,7 @@ func (this *mysql) Query(sql string, args ...interface{}) (*sql.Rows, error) {
 	rows, err := this.db.Query(sql, args...)
 	if err != nil {
 		if this.db.Ping() != nil {
-			// if dbobj connection is broken,
-			// reconnect database.
-			fmt.Errorf("%s", "Connection is broken")
+			logger.Warn("Connection is broken")
 			if val, ok := NewMySQL().(*mysql); ok {
 				this.db = val.db
 			}
@@ -118,9 +107,7 @@ func (this *mysql) Exec(sql string, args ...interface{}) (sql.Result, error) {
 	result, err := this.db.Exec(sql, args...)
 	if err != nil {
 		if this.db.Ping() != nil {
-			// if dbobj connection is broken,
-			// reconnect database.
-			fmt.Errorf("%s", "Connection is broken")
+			logger.Warn("Connection is broken")
 			if val, ok := NewMySQL().(*mysql); ok {
 				this.db = val.db
 			}
@@ -133,10 +120,8 @@ func (this *mysql) Exec(sql string, args ...interface{}) (sql.Result, error) {
 func (this *mysql) Begin() (*sql.Tx, error) {
 	tx, err := this.db.Begin()
 	if err != nil {
-		// if dbobj connection is broken,
-		// reconnect database.
 		if this.db.Ping() != nil {
-			fmt.Errorf("%s", "Connection is broken")
+			logger.Warn("Connection is broken")
 			if val, ok := NewMySQL().(*mysql); ok {
 				this.db = val.db
 			}
@@ -149,10 +134,8 @@ func (this *mysql) Begin() (*sql.Tx, error) {
 func (this *mysql) Prepare(sql string) (*sql.Stmt, error) {
 	stmt, err := this.db.Prepare(sql)
 	if err != nil {
-		// if dbobj connection is broken,
-		// reconnect database.
 		if this.db.Ping() != nil {
-			fmt.Errorf("%s", "Connection is broken")
+			logger.Warn("Connection is broken")
 			if val, ok := NewMySQL().(*mysql); ok {
 				this.db = val.db
 			}
@@ -164,7 +147,7 @@ func (this *mysql) Prepare(sql string) (*sql.Stmt, error) {
 
 func (this *mysql) QueryRow(sql string, args ...interface{}) *sql.Row {
 	if this.db.Ping() != nil {
-		fmt.Errorf("%s", "Connection is broken")
+		logger.Warn("Connection is broken")
 		if val, ok := NewMySQL().(*mysql); ok {
 			this.db = val.db
 		}

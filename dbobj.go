@@ -21,7 +21,7 @@ import (
 	"strconv"
 
 	"github.com/hzwy23/dbobj/dbhandle"
-	"github.com/hzwy23/dbobj/utils"
+	"github.com/hzwy23/panda"
 )
 
 var (
@@ -294,7 +294,7 @@ func scanForStruct(obj reflect.Value, rows *sql.Rows) error {
 				str := vals.(*sql.NullString).String
 				tag := obj.Type().Field(index).Tag.Get("dateType")
 				if tag != "" {
-					str, _ = utils.DateFormat(str, tag)
+					str, _ = panda.DateFormat(str, tag)
 				}
 				obj.Field(index).SetString(str)
 			case *sql.NullBool:
@@ -376,7 +376,7 @@ func scanForSlice(obj reflect.Value, rows *sql.Rows) error {
 				str := vals.(*sql.NullString).String
 				tag := obj.Index(i).Type().Field(index).Tag.Get("dateType")
 				if tag != "" {
-					str, _ = utils.DateFormat(str, tag)
+					str, _ = panda.DateFormat(str, tag)
 				}
 				obj.Index(i).Field(index).SetString(str)
 			case *sql.NullBool:

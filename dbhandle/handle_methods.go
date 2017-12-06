@@ -1,9 +1,17 @@
 package dbhandle
 
 import (
+	"github.com/hzwy23/panda/logger"
 	"database/sql"
-	"fmt"
 	"sync"
+	"path/filepath"
+	"os"
+	"github.com/hzwy23/panda/config"
+)
+
+
+const (
+	ApplicationBase = "WI_HOME"
 )
 
 type instance func() DbObj
@@ -47,10 +55,17 @@ func Register(dsn string, f instance) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 	if f == nil {
-		fmt.Errorf("sql: Register driver is nil")
+		logger.Error("sql: Register driver is nil")
 	}
 	if _, dup := Adapter[dsn]; dup {
-		fmt.Println("reregister diver. dsn is :", dsn)
+		logger.Error("reregister diver. dsn is :", dsn)
 	}
 	Adapter[dsn] = f
+}
+
+// Function GetConfig load database connection information
+func GetConfig() (config.Handle, error){
+	HOME := os.Getenv(ApplicationBase)
+	file := filepath.Join(HOME, "conf", "app.conf")
+	return config.Load(file)
 }

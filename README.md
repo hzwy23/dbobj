@@ -15,17 +15,17 @@ dbobj 提供一个操作数据库的工具包，通过直接写sql的方式操�
 
 3. 修改dbobj根目录中init.go文件，**将第5行的注释去掉**。
 
-3. 请设置环境变量.HBIGDATA_HOME.这个变量中创建目录conf.然后将dbobj中的dbobj.conf复制到conf中.
+3. 请设置环境变量.HBIGDATA_HOME.这个变量中创建目录conf.然后将dbobj中的app.conf复制到conf中.
 
 ### mysql，mariadb数据库
-1. 请设置环境变量.HBIGDATA_HOME.这个变量中创建目录conf.然后将dbobj中的dbobj.conf复制到conf中.
+1. 请设置环境变量.HBIGDATA_HOME.这个变量中创建目录conf.然后将dbobj中的app.conf复制到conf中.
 
 ### 创建目录
 
 ```shell
     export HBIGDATA_HOME=/opt/go/hcloud
     mkdir $HBIGDATA_HOME/conf
-    cp dbobj.conf $HBIGDATA_HOME/conf
+    cp app.conf $HBIGDATA_HOME/conf
 ```
 
 ### 工程目录样式:
@@ -40,12 +40,12 @@ $HBIGDATA_HOME
 
             ----conf
 
-            --------dbobj.conf
+            --------app.conf
             
             main.go
 ```
 
-在指定的配置文件目录中创建配置文件,配置文件名称指定为:dbobj.conf,在文件中输入下面信息:
+在指定的配置文件目录中创建配置文件,配置文件名称指定为:app.conf,在文件中输入下面信息:
 
 #### mysql配置文件
 

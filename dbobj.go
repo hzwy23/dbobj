@@ -158,6 +158,7 @@ func QueryForObject(sql string, args []interface{}, result ...interface{}) error
 // 扫描单行值
 // 如果有多行值，则只返回第一行
 func ScanRow(rows *sql.Rows, result ...interface{}) error {
+	defer rows.Close()
 	// 获取查询结果字段数量
 	cols, err := rows.Columns()
 	if err != nil {
@@ -253,6 +254,7 @@ func Count(sql string, args ...interface{}) int64 {
 }
 
 func scanForStruct(obj reflect.Value, rows *sql.Rows) error {
+	defer rows.Close()
 	// 获取查询结果字段数量
 	cols, err := rows.Columns()
 	if err != nil {
@@ -315,6 +317,7 @@ func scanForStruct(obj reflect.Value, rows *sql.Rows) error {
 }
 
 func scanForSlice(obj reflect.Value, rows *sql.Rows) error {
+	defer rows.Close()
 	// 获取查询结果字段数量
 	cols, err := rows.Columns()
 	if err != nil {

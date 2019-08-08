@@ -1,14 +1,13 @@
 package dbhandle
 
 import (
-	"github.com/hzwy23/panda/logger"
 	"database/sql"
-	"sync"
-	"path/filepath"
-	"os"
 	"github.com/hzwy23/panda/config"
+	"github.com/hzwy23/panda/logger"
+	"os"
+	"path/filepath"
+	"sync"
 )
-
 
 const (
 	ApplicationBase = "WI_HOME"
@@ -64,7 +63,7 @@ func Register(dsn string, f instance) {
 }
 
 // Function GetConfig load database connection information
-func GetConfig() (config.Handle, error){
+func GetConfig() (config.Handle, error) {
 	HOME := os.Getenv(ApplicationBase)
 	file := filepath.Join(HOME, "conf", "app.conf")
 	return config.Load(file)

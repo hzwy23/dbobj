@@ -1,16 +1,13 @@
 package oracle
 
 import (
-	"github.com/hzwy23/panda/logger"
 	"database/sql"
+	"github.com/hzwy23/panda/logger"
 	"os"
 	"strconv"
 	"strings"
 
-	"path/filepath"
-
 	"github.com/hzwy23/dbobj/dbhandle"
-	"github.com/hzwy23/panda/config"
 	_ "github.com/mattn/go-oci8"
 )
 
@@ -30,7 +27,7 @@ func NewOracle() dbhandle.DbObj {
 	}
 	os.Setenv("NLS_DATE_FORMAT", "YYYY-MM-DD HH24:MI:SS")
 
-	red,err:=dbhandle.GetConfig()
+	red, err := dbhandle.GetConfig()
 	if err != nil {
 		panic("cant not read ./conf/dbobj.conf.please check this file.")
 	}
@@ -60,13 +57,13 @@ func NewOracle() dbhandle.DbObj {
 	o.db, err = sql.Open("oci8", tnsname)
 
 	if err != nil {
-		logger.Error("open oracle database failed.%v"+ err)
+		logger.Error("open oracle database failed.%v" + err)
 		return nil
 	}
 	if len(pad) != 24 {
 		psd, err := utils.Encrypt(pad)
 		if err != nil {
-			logger.Error("decrypt passwd failed.%v"+psd)
+			logger.Error("decrypt passwd failed.%v" + psd)
 			return nil
 		}
 		psd = "\"" + psd + "\""

@@ -1,9 +1,9 @@
 package mysql
 
 import (
-	"github.com/hzwy23/panda/logger"
 	"database/sql"
 	"github.com/hzwy23/panda/crypto/aes"
+	"github.com/hzwy23/panda/logger"
 	"strconv"
 	"strings"
 
@@ -21,15 +21,15 @@ func NewMySQL() dbhandle.DbObj {
 
 	o := new(mysql)
 
-	red,err:=dbhandle.GetConfig()
+	red, err := dbhandle.GetConfig()
 	if err != nil {
 		panic("cant not read ./conf/dbobj.conf.please check this file.")
 	}
 
-	tns,_ :=  red.Get("DB.tns")
-	usr,_ := red.Get("DB.user")
-	pad,_ := red.Get("DB.passwd")
-	mc,_ := red.Get("DB.maxConn")
+	tns, _ := red.Get("DB.tns")
+	usr, _ := red.Get("DB.user")
+	pad, _ := red.Get("DB.passwd")
+	mc, _ := red.Get("DB.maxConn")
 	maxConn := 100
 	if len(mc) != 0 {
 		mx, err := strconv.Atoi(mc)
@@ -55,7 +55,7 @@ func NewMySQL() dbhandle.DbObj {
 	if len(pad) != 24 {
 		psd, err := aes.Encrypt(pad)
 		if err != nil {
-			logger.Error("decrypt passwd failed."+psd)
+			logger.Error("decrypt passwd failed." + psd)
 			return nil
 		}
 		psd = "\"" + psd + "\""

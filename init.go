@@ -4,17 +4,16 @@ import (
 	"github.com/hzwy23/dbobj/dbhandle"
 
 	_ "github.com/hzwy23/dbobj/mysql"
-	//_ "github.com/hzwy23/dbobj/oracle"
 )
 
 func init() {
 	conf, err := dbhandle.GetConfig()
 	if err != nil {
-		panic("init database failed."+err.Error())
+		panic("init database failed." + err.Error())
 	}
 	Default, err = conf.Get("DB.type")
 	if err != nil {
-		panic("get default database type failed."+err.Error())
+		panic("get default database type failed." + err.Error())
 	}
 	InitDB(Default)
 }
